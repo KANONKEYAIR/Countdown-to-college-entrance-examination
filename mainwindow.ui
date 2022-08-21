@@ -95,7 +95,7 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="STRINGLABEL">
     <property name="geometry">
      <rect>
       <x>-10</x>
@@ -177,7 +177,7 @@
      </font>
     </property>
     <property name="text">
-     <string>马克思列宁主义、毛泽东思想万岁！</string>
+     <string>[错误！配置文件丢失！]</string>
     </property>
     <property name="textFormat">
      <enum>Qt::PlainText</enum>

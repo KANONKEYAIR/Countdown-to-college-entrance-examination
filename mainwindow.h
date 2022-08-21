@@ -7,6 +7,8 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QProcess>
+#include <QFile>
+#include <QTextStream>
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +30,10 @@ public:
     int get_second();
     bool CheckAppRunningStatus(const QString &appName);
     void KillAppProcess(const QString &appName);
+    QString Config_Time;
+    QString Config_Label;
+    QStringList Config_Blacklist;
+    void Config_Iintial();
 
 private:
     Ui::MainWindow *ui;

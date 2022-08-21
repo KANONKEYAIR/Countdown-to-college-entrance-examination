@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowFlags(Qt::Dialog|Qt::FramelessWindowHint);
     ui->setupUi(this);
     MainWindow::timeout();
+    MainWindow::Config_Iintial();
 }
 
 MainWindow::~MainWindow()
@@ -23,20 +24,27 @@ MainWindow::~MainWindow()
 int MainWindow::get_day()
 {
     QDateTime time1 = QDateTime::currentDateTime();
-    QDateTime time2 = QDateTime::fromString("2023-06-07 09:00:00", "yyyy-MM-dd HH:mm:ss");
+    QDateTime time2 = QDateTime::fromString(Config_Time, "yyyy-MM-dd HH:mm:ss");
     return time1.daysTo(time2);
 }
 int MainWindow::get_second()
 {
     QDateTime time1 = QDateTime::currentDateTime();
-    QDateTime time2 = QDateTime::fromString("2023-06-07 09:00:00", "yyyy-MM-dd HH:mm:ss");
+    QDateTime time2 = QDateTime::fromString(Config_Time, "yyyy-MM-dd HH:mm:ss");
     return time1.secsTo(time2);
 }
 
 void MainWindow::timeout()
 {
     // 初始化
-    bool status = CheckAppRunningStatus("哔哩哔哩.exe") || CheckAppRunningStatus("msedge.exe") || CheckAppRunningStatus("steam.exe");
+    for (int i=0; i<Config_Blacklist.length(); i++)
+    {
+        if (CheckAppRunningStatus(Config_Blacklist[i]))
+        {
+            KillAppProcess(Config_Blacklist[i]);
+            QMessageBox::warning(NULL, "警告","别玩了，好好学习！");
+        }
+    }
     //this->day_num = get_day();
     //ui->leftday->setText(QString::number(day_num));
     this->second_num = get_second();
@@ -48,15 +56,6 @@ void MainWindow::timeout()
     ui->lefthour->setText(QString::number(hour));
     ui->leftminute->setText(QString::number(minute));
     ui->leftsecond->setText(QString::number(second));
-    if (CheckAppRunningStatus("哔哩哔哩.exe"))
-        KillAppProcess("哔哩哔哩.exe");
-    if (CheckAppRunningStatus("msedge.exe"))
-        KillAppProcess("msedge.exe");
-    if (CheckAppRunningStatus("steam.exe"))
-        KillAppProcess("steam.exe");
-    if (status)
-        QMessageBox::warning(NULL, "警告","别玩了，好好学习！");
-
 }
 
 bool MainWindow::CheckAppRunningStatus(const QString &appName)
@@ -82,4 +81,38 @@ void MainWindow::KillAppProcess(const QString &appName)
     p.execute(c);
     p.close();
 #endif
+}
+
+void MainWindow::Config_Iintial()
+{
+    QFile file("Config.ini");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream File(&file);
+    File.setCodec("UTF-8");
+    QString temp,temp2;
+    while(!File.atEnd())
+    {
+        temp = File.readLine();
+        if (temp == "[TimeSetting]")
+        {
+            Config_Time = File.readLine();
+            continue;
+        }
+        if (temp == "[Label]")
+        {
+            Config_Label = File.readLine();
+            ui->STRINGLABEL->setText(Config_Label);
+            continue;
+        }
+        if (temp == "[Blacklist]")
+        {
+            while(1)
+            {
+                temp2 = File.readLine();
+                if (temp2 == "[/Blacklist]")
+                    break;
+                Config_Blacklist << temp2;
+            }
+        }
+    }
 }
